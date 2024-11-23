@@ -8,7 +8,7 @@ import os
 from random import choice
 
 import vizdoom as vzd
-
+import time
 
 game = vzd.DoomGame()
 
@@ -68,7 +68,7 @@ for i in range(episodes):
 
     # Play until the game (episode) is over.
     while not game.is_episode_finished():
-
+        time.sleep(0.05)
         # Get the state.
         state = game.get_state()
 

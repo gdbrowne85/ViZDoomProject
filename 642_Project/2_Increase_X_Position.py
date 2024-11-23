@@ -75,7 +75,7 @@ if __name__ == "__main__":
     # game.add_available_button(vzd.Button.ATTACK)
     # Or by setting them all at once:
     game.set_available_buttons(
-        [vzd.Button.MOVE_FORWARD, vzd.Button.USE, vzd.Button.ATTACK, vzd.Button.MOVE_LEFT, vzd.Button.MOVE_RIGHT]
+        [vzd.Button.MOVE_FORWARD, vzd.Button.TURN_LEFT, vzd.Button.TURN_RIGHT]
     )
     # Buttons that will be used can be also checked by:
     print("Available buttons:", [b.name for b in game.get_available_buttons()])
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     # game.clear_available_game_variables()
     # game.add_available_game_variable(vzd.GameVariable.AMMO2)
     # Or:
-    game.set_available_game_variables([vzd.GameVariable.AMMO2, vzd.GameVariable.KILLCOUNT])
+    game.set_available_game_variables([vzd.GameVariable.POSITION_X])
     print(
         "Available game variables:",
         [v.name for v in game.get_available_game_variables()],
@@ -114,6 +114,7 @@ if __name__ == "__main__":
     # Sets the living reward (for each move) to -1
     # game.set_living_reward(-1)
 
+
     # Sets ViZDoom mode (PLAYER, ASYNC_PLAYER, SPECTATOR, ASYNC_SPECTATOR, PLAYER mode is default)
     game.set_mode(vzd.Mode.PLAYER)
 
@@ -127,8 +128,7 @@ if __name__ == "__main__":
     # MOVE_LEFT, MOVE_RIGHT, ATTACK
     # game.get_available_buttons_size() can be used to check the number of available buttons.
     # 5 more combinations are naturally possible but only 3 are included for transparency when watching.
-    actions = [[True, False, False], [False, True, False], [False, False, True], [False, False, False, True], [False, False, False, False, True]]
-
+    actions = [[True, False, False], [False, True, False], [False, False, True]]
     # Run this many episodes
     episodes = 10
 
@@ -150,7 +150,13 @@ if __name__ == "__main__":
             # Which consists of:
             n = state.number
             vars = state.game_variables
-
+            if n > 1:
+                previous_x_position = current_x_position
+            else:
+                previous_x_position = vars[0]
+            current_x_position = vars[0]  # for determining reward
+            print('Previous X Position: ', previous_x_position)
+            print('Current X Position: ', current_x_position)
             # Different buffers (screens, depth, labels, automap, audio)
             # Expect of screen buffer some may be None if not first enabled.
             screen_buf = state.screen_buffer
@@ -173,8 +179,8 @@ if __name__ == "__main__":
             # game.get_game_variable(GameVariable.AMMO2)
 
             # Makes an action (here random one) and returns a reward.
-            r = game.make_action(choice(actions))
-
+            game.make_action(choice(actions))
+            r = current_x_position - previous_x_position
             # Makes a "prolonged" action and skip frames:
             # skiprate = 4
             # r = game.make_action(choice(actions), skiprate)
@@ -197,6 +203,5 @@ if __name__ == "__main__":
         print("Episode finished.")
         print("Total reward:", game.get_total_reward())
         print("************************")
-
     # It will be done automatically anyway but sometimes you need to do it in the middle of the program...
     game.close()
