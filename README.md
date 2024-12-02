@@ -21,7 +21,8 @@ This project uses VizDoom to train agents with deep reinforcement learning to co
 ```bash
    pip install -r requirements.txt
 ```
-3. Run Individual Python Scripts as desired:
+
+## Run Individual Python Scripts as desired:
 
 Attack Dodging:
 ```bash
